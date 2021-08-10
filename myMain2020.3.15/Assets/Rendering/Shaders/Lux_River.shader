@@ -12,6 +12,8 @@ Shader "Jefford/Lux_River"
         _Speed("_Speed",Range(0,1)) = 0.3
         _WaterDirX("_WaterDirX",Range(-1,1)) = 0.5
         _WaterDirZ("_WaterDirZ",Range(-1,1)) = 0.5
+        _WaterSmoothness("_WaterSmoothness", Range(0, 1)) = 1
+        _WaterSpecularColor("_WaterSpecularColor", Color) = (0.5, 0.5, 0.5, 1)
 
         [Space(20)]
         [Toggle] _Refract("_Refract",int) = 0
@@ -19,12 +21,19 @@ Shader "Jefford/Lux_River"
         _EdgeBlend("_EdgeBlend", Range(0,1)) = 1
 
         [Space(20)]
+        [Header(FoamLight)]
         [Toggle] _Foam("_Foam",int) = 0
+        _FoamWidth("_Foam Width",float) = 1
         _FoamMap("_FoamMap", 2D) = "white" {}
-        _FoamTiling("_FoamTiling", Range(0, 20)) = 1
-        _FoamSpeed("_FoamSpeed", Range(0,1)) = 1
-        _FoamSlopStrength("_FoamSlopStrength", float) = 1
-        _FoamWidth("_FoamWidth",float) = 1
+        _FoamTiling("_Foam Tiling", Range(0, 20)) = 1
+        _FoamSpeed("_Foam Speed", Range(0,1)) = 1
+        _FoamSlopIntensity("_FoamSlop Intensity", float) = 1
+        _FoamSmoothness("_FoamSmoothness",Range(0, 1)) = 1
+
+
+        [Space(20)]
+        [Header(UnderWater)]
+        _Density_UnderWater("_Density_UnderWater",float) = 1
     }
 
     SubShader
@@ -75,14 +84,19 @@ Shader "Jefford/Lux_River"
             half _Speed;
             half _WaterDirX;
             half _WaterDirZ;
+            half _WaterSmoothness;
+            half _WaterSpecularColor;
 
             half _Refraction;
             half _EdgeBlend;
 
             half _FoamTiling;
             half _FoamSpeed;
-            half _FoamSlopStrength;
+            half _FoamSlopIntensity;
             half _FoamWidth;
+            half _FoamSmoothness;
+
+            half _Density_UnderWater;
             CBUFFER_END
 
             TEXTURE2D(_CameraDepthTexture); SAMPLER(sampler_CameraDepthTexture);
@@ -99,12 +113,18 @@ Shader "Jefford/Lux_River"
 
             struct Varyings
             {
-                float4 positionCS       : SV_POSITION;
-                float2 uv           : TEXCOORD0;
-                float3 normalWS                 : TEXCOORD1;   
-                float3 tangentWS                : TEXCOORD2;    
-                float3 bitangentWS              : TEXCOORD3;            
-                float3 positionWS              : TEXCOORD4;     
+                float4 positionCS              : SV_POSITION;
+                float2 uv                      : TEXCOORD0;
+                float3 normalWS                : TEXCOORD1;   
+                float3 tangentWS               : TEXCOORD2;    
+                float3 bitangentWS             : TEXCOORD3;            
+                float3 positionWS              : TEXCOORD4;   
+                #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+                    float4 shadowCoord         : TEXCOORD5;
+                #endif  
+                half3 vertexLight              : TEXCOORD6;
+                half3 SH                       : TEXCOORD7;
+                half3 viewDirWS                : TEXCOORD8;
 
             };
 
@@ -130,8 +150,16 @@ Shader "Jefford/Lux_River"
                 o.positionWS = mul(UNITY_MATRIX_M, float4(v.positionOS.xyz, 1.0));
                 o.positionCS = mul(UNITY_MATRIX_VP, mul(UNITY_MATRIX_M, float4(v.positionOS.xyz, 1.0))); 
 
+                #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+                    o.shadowCoord = TransformWorldToShadowCoord(o.positionWS);
+                #endif
+
+                o.vertexLight = VertexLighting(o.positionWS, o.normalWS);
+                o.SH = SampleSHVertex(o.normalWS);
+                o.viewDirWS = _WorldSpaceCameraPos - o.positionWS;
                 return o;
             }
+
 
             half4 frag(Varyings i) : SV_Target
             {
@@ -143,7 +171,21 @@ Shader "Jefford/Lux_River"
                         screenUV = UnityStereoTransformScreenSpaceTex(screenUV);
                     #endif
                 }
+
+                #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+                    float4 shadowCoord = i.shadowCoord;
+                #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+                    float4 shadowCoord = TransformWorldToShadowCoord(i.positionWS);
+                #else
+                    float4 shadowCoord = float4(0, 0, 0, 0);
+                #endif
                 
+                half3 SH = i.SH;
+                half3 vertexLight = i.vertexLight;
+                half3 viewDirWS = SafeNormalize(i.viewDirWS);
+
+                // -----------------------------------------------------------------------
+
                 half3x3 tbn = half3x3(i.tangentWS.xyz, i.bitangentWS.xyz, i.normalWS.xyz);
 
                 half2 waterDir = _Time.y * _Speed * half2(_WaterDirX,_WaterDirZ);
@@ -157,7 +199,7 @@ Shader "Jefford/Lux_River"
                 half3 normalWS = NormalizeNormalPerPixel(mul(blendNormalTS, tbn));
                 
 
-                float distanceFadeFactor = 1; // 距离衰减 越远值越小
+                float distanceFadeFactor = 1; // 距离衰减， 越远值越小越暗
                 {
                     distanceFadeFactor = i.positionCS.z * _ZBufferParams.z;
                     #if UNITY_REVERSED_Z != 1  //  OpenGL
@@ -165,7 +207,9 @@ Shader "Jefford/Lux_River"
                     #endif
                 }
                 
-                #if defined _REFRACT_ON // 折射
+                // 折射
+                #if defined _REFRACT_ON 
+                    // distanceFadeFactor： 越远越接近0，则 offset 越等于零
                     float2 offset = blendNormalTS.xy * _Refraction * distanceFadeFactor;
                 #else
                     float2 offset = 0;
@@ -173,34 +217,73 @@ Shader "Jefford/Lux_River"
 
                 half depthMap = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, screenUV + offset);
                 half sceneDepth = LinearEyeDepth(depthMap, _ZBufferParams);
-                half viewDepth = sceneDepth - i.positionCS.w;
+                // 计算深度差
+                half viewDepth = sceneDepth - i.positionCS.w; 
 
-                // #if defined _REFRACT_ON // 折射
-                //     offset = screenUV + offset * saturate(viewDepth);
-                //     depthMap = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, offset);
-                //     sceneDepth = LinearEyeDepth(depthMap, _ZBufferParams);
-                //     viewDepth = sceneDepth - i.positionCS.w;
-
-                //     half3 refractMap = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, saturate(offset));
-                //     refractMap = saturate(refractMap);
-                // #endif
-
-                half alpha = saturate(_EdgeBlend * viewDepth);
-
-                #if defined _FOAM_ON
-                    half foamNoise = blendNormalTS.z * 2 - 1;
-                    half foamWidth = saturate(_FoamWidth * viewDepth * 100);
-                    half2 uv_foam = _FoamTiling * uv + _FoamSpeed * blendNormalTS.xy;
-                    half4 foamMap = SAMPLE_TEXTURE2D(_FoamMap, sampler_FoamMap, uv_foam);
-
-                    half shoreFoam = (1 - foamWidth) * foamNoise;
-                    shoreFoam = foamWidth - foamWidth * foamWidth;
+                // 折射
+                #if defined _REFRACT_ON 
+                    offset = screenUV + offset * saturate(viewDepth);
+                    depthMap = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, offset);
+                    sceneDepth = LinearEyeDepth(depthMap, _ZBufferParams);
+                    viewDepth = sceneDepth - i.positionCS.w;
                     
+                    half3 refractMap = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, saturate(offset));
+                    refractMap = saturate(refractMap);
                 #endif
 
 
+                half alpha = saturate(_EdgeBlend * viewDepth);
 
+                // 0 - 1 之间的曲线过渡
+                half viewAtten = saturate(1 - exp(-viewDepth * _Density_UnderWater));
+                half underWaterDensity = viewAtten;
+
+
+                half smoothness = _WaterSmoothness;
+                #if defined _FOAM_ON
+                    // 泡沫的宽度
+                    half foamWidth = saturate(_FoamWidth * viewDepth);
+                    // 泡沫的噪点
+                    half foamNoise = blendNormalTS.z * 2 - 1;
+                    // 岸边的泡沫, 反向之后 * 泡沫的噪点，即只有边缘地方有泡沫
+                    half shoreFoam = (1 - foamWidth) * foamNoise;
+                    // 深水和浅水区域为 0
+                    half shoreFoamMask = saturate(foamWidth - foamWidth * foamWidth);
+                    shoreFoam *= shoreFoamMask;
+
+                    // 斜坡区域的泡沫
+                    half slopeMask = saturate(1 - i.normalWS.y);
+                    half slopeFoam = slopeMask * _FoamSlopIntensity;
+
+                    // 岸边泡沫和斜坡泡沫相加
+                    shoreFoam += slopeMask;
+
+
+                    half2 uv_foam = _FoamTiling * uv + _FoamSpeed * blendNormalTS.xy;
+                    half4 foamMap = SAMPLE_TEXTURE2D(_FoamMap, sampler_FoamMap, uv_foam);
+
+                    // 获得泡沫的光滑度
+                    half a = 0.8 - foamMap.a;    // (-0.2 - 0.8)
+                    half b = 1.6 - foamMap.a;   //  0.6 - 1.6
+                    foamMap.a = foamMap.a * smoothstep(a, b, foamMap.a);
+                    smoothness = lerp(smoothness, _FoamSmoothness, foamMap.a);
+                #endif
+
+
+                half reflectivity = ReflectivitySpecular(_WaterSpecularColor);
+                half oneMinusReflectivity = 1.0 - reflectivity;
+                half perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(smoothness);
+                half roughness = PerceptualRoughnessToRoughness(perceptualRoughness);
+                half roughness2 = roughness * roughness;
+                half normalizationTerm = roughness * 4.0h + 2.0h;
+
+                Light mainLight = GetMainLight(shadowCoord);
+                half3 lightColAtten = mainLight.color * (mainLight.distanceAttenuation * mainLight.shadowAttenuation);
                 
+
+                // UnderWater Diffuse
+                half underWaterDiffu = saturate(dot(half3(0,1,0), mainLight.direction));
+
                 half4 c;
                 half4 baseMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv);
                 c = baseMap * _BaseColor;
