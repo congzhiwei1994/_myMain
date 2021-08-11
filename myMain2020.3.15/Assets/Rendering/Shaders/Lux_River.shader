@@ -3,10 +3,12 @@ Shader "Jefford/Lux_River"
 {
     Properties
     {
-        _BaseColor("Base Color",color) = (1,1,1,1)
-        _BaseMap("BaseMap", 2D) = "white" {}
+        // _BaseColor("Base Color",color) = (1,1,1,1)
+        // _BaseMap("BaseMap", 2D) = "white" {}
+        _WaterColor("_WaterColor",Color) = (1, 1, 1, 1)
         [NoScaleOffset]_BumpMap("Normal Map", 2D) = "bump" {}
         _BumpScale("Normal Scale", Float) = 1.0
+        _ReflectionBumpScale("_Reflection BumpScale",Range(0,1)) = 0.5
         _DetailMapScale("_DetailMapScale", Float) = 1.0
         _NormalTilling("_NormalTilling",Range(0,20)) = 1
         _Speed("_Speed",Range(0,1)) = 0.3
@@ -23,13 +25,13 @@ Shader "Jefford/Lux_River"
         [Space(20)]
         [Header(FoamLight)]
         [Toggle] _Foam("_Foam",int) = 0
+        _FoamScale("_FoamScale",float) = 1
         _FoamWidth("_Foam Width",float) = 1
         _FoamMap("_FoamMap", 2D) = "white" {}
         _FoamTiling("_Foam Tiling", Range(0, 20)) = 1
         _FoamSpeed("_Foam Speed", Range(0,1)) = 1
         _FoamSlopIntensity("_FoamSlop Intensity", float) = 1
         _FoamSmoothness("_FoamSmoothness",Range(0, 1)) = 1
-
 
         [Space(20)]
         [Header(UnderWater)]
@@ -75,8 +77,8 @@ Shader "Jefford/Lux_River"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
-            half4 _BaseColor;
-            float4 _BaseMap_ST;
+            // half4 _BaseColor;
+            // float4 _BaseMap_ST;
             float _BumpScale;
             half _DetailMapScale;
             half _NormalTilling;
@@ -95,8 +97,11 @@ Shader "Jefford/Lux_River"
             half _FoamSlopIntensity;
             half _FoamWidth;
             half _FoamSmoothness;
+            half _FoamScale;
 
             half _Density_UnderWater;
+            half4 _WaterColor;
+            half _ReflectionBumpScale;
             CBUFFER_END
 
             TEXTURE2D(_CameraDepthTexture); SAMPLER(sampler_CameraDepthTexture);
@@ -124,7 +129,7 @@ Shader "Jefford/Lux_River"
                 #endif  
                 half3 vertexLight              : TEXCOORD6;
                 half3 SH                       : TEXCOORD7;
-                half3 viewDirWS                : TEXCOORD8;
+                half3 V                : TEXCOORD8;
 
             };
 
@@ -156,7 +161,7 @@ Shader "Jefford/Lux_River"
 
                 o.vertexLight = VertexLighting(o.positionWS, o.normalWS);
                 o.SH = SampleSHVertex(o.normalWS);
-                o.viewDirWS = _WorldSpaceCameraPos - o.positionWS;
+                o.V = _WorldSpaceCameraPos - o.positionWS;
                 return o;
             }
 
@@ -182,7 +187,7 @@ Shader "Jefford/Lux_River"
                 
                 half3 SH = i.SH;
                 half3 vertexLight = i.vertexLight;
-                half3 viewDirWS = SafeNormalize(i.viewDirWS);
+                half3 V = SafeNormalize(i.V);
 
                 // -----------------------------------------------------------------------
 
@@ -190,6 +195,7 @@ Shader "Jefford/Lux_River"
 
                 half2 waterDir = _Time.y * _Speed * half2(_WaterDirX,_WaterDirZ);
                 half2 uv_normal = uv * _NormalTilling + waterDir;
+
                 half4 normalMap = SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap,uv);
                 half3 normapTS = UnpackNormalScale(normalMap,_BumpScale);
                 half4 detailMap = SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap,uv_normal);
@@ -209,7 +215,7 @@ Shader "Jefford/Lux_River"
                 
                 // 折射
                 #if defined _REFRACT_ON 
-                    // distanceFadeFactor： 越远越接近0，则 offset 越等于零
+                    // 随着镜头距离拉远，偏移值逐渐变小
                     float2 offset = blendNormalTS.xy * _Refraction * distanceFadeFactor;
                 #else
                     float2 offset = 0;
@@ -217,27 +223,27 @@ Shader "Jefford/Lux_River"
 
                 half depthMap = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, screenUV + offset);
                 half sceneDepth = LinearEyeDepth(depthMap, _ZBufferParams);
-                // 计算深度差
-                half viewDepth = sceneDepth - i.positionCS.w; 
+                half viewDepth = sceneDepth - i.positionCS.w; // 深度差，边缘为0
 
-                // 折射
+                // 计算折射纹理采样
+                half3 refractColor = 0;
                 #if defined _REFRACT_ON 
                     offset = screenUV + offset * saturate(viewDepth);
                     depthMap = SAMPLE_TEXTURE2D(_CameraDepthTexture, sampler_CameraDepthTexture, offset);
                     sceneDepth = LinearEyeDepth(depthMap, _ZBufferParams);
                     viewDepth = sceneDepth - i.positionCS.w;
                     
-                    half3 refractMap = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, saturate(offset));
-                    refractMap = saturate(refractMap);
+                    refractColor = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, sampler_CameraOpaqueTexture, saturate(offset));
+                    refractColor = saturate(refractColor);
                 #endif
+                half3 refractMap = refractColor;
 
+                
 
-                half alpha = saturate(_EdgeBlend * viewDepth);
-
-                // 0 - 1 之间的曲线过渡
+                // 0 - 1 之间的曲线过渡 , 岸边是0 中间是1
                 half viewAtten = saturate(1 - exp(-viewDepth * _Density_UnderWater));
                 half underWaterDensity = viewAtten;
-
+                
 
                 half smoothness = _WaterSmoothness;
                 #if defined _FOAM_ON
@@ -262,6 +268,8 @@ Shader "Jefford/Lux_River"
                     half2 uv_foam = _FoamTiling * uv + _FoamSpeed * blendNormalTS.xy;
                     half4 foamMap = SAMPLE_TEXTURE2D(_FoamMap, sampler_FoamMap, uv_foam);
 
+                    foamMap.a = saturate(foamMap.a * shoreFoam * _FoamScale  * ( 1 - (blendNormalTS.x + blendNormalTS.y) * 4) );
+                    
                     // 获得泡沫的光滑度
                     half a = 0.8 - foamMap.a;    // (-0.2 - 0.8)
                     half b = 1.6 - foamMap.a;   //  0.6 - 1.6
@@ -279,15 +287,128 @@ Shader "Jefford/Lux_River"
 
                 Light mainLight = GetMainLight(shadowCoord);
                 half3 lightColAtten = mainLight.color * (mainLight.distanceAttenuation * mainLight.shadowAttenuation);
-                
+                half NdotL = saturate(dot( i.normalWS, mainLight.direction));
 
                 // UnderWater Diffuse
-                half underWaterDiffu = saturate(dot(half3(0,1,0), mainLight.direction));
+                half underWater_NoL = saturate(dot(half3(0,1,0), mainLight.direction));
 
-                half4 c;
-                half4 baseMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv);
-                c = baseMap * _BaseColor;
-                return c;
+
+                // underWater Diffuse
+                half3 underWaterDiffuse = 0;
+                {
+                    // 通过水的深度来衰减阴影 
+                    half waterShadow = lerp(mainLight.shadowAttenuation, 1, underWaterDensity); 
+                    underWaterDiffuse = underWater_NoL * mainLight.color * mainLight.distanceAttenuation * waterShadow;
+                    underWaterDiffuse = _WaterColor * (underWaterDiffuse + SH + vertexLight);
+                }
+
+
+                // Foam Diffuse
+                half3 foamDiffuse = 0;
+                {
+                    #if defined _FOAM_ON
+                        foamDiffuse = foamMap.rgb * (lightColAtten * NdotL + SH + vertexLight);
+                    #endif
+                }
+
+                
+                // 直接光 高光
+                half3 specularLighting = 0;
+                {
+                    float3 H = SafeNormalize(float3(mainLight.direction) + float3(V));
+                    float NoH = saturate(dot(normalWS, H));
+                    half LoH = saturate(dot(mainLight.direction, H));
+                    float d = NoH * NoH * (roughness2 - 1.h) + 1.0001f;
+                    half LoH2 = LoH * LoH;
+                    half specularTerm = roughness2 / ((d * d) * max(0.1h, LoH2) * normalizationTerm );
+                    #if defined (SHADER_API_MOBILE)
+                        specularTerm = specularTerm - HALF_MIN;
+                        specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
+                    #endif
+                    specularLighting = specularTerm * _WaterSpecularColor * lightColAtten;
+                    specularLighting *= NdotL;
+                }
+
+                // 环境高光
+                half3 indirectSpecular = 0;
+                {
+                    half3 reflectionNormal = lerp( i.normalWS.xyz, normalWS, _ReflectionBumpScale);
+                    half3 reflectionVector = reflect(-V, reflectionNormal);
+                    half fresnelTerm = Pow4(1.0 - saturate(dot(normalWS, V)));
+                    half occlusion = 1;
+                    indirectSpecular = GlossyEnvironmentReflection(reflectionVector, perceptualRoughness, occlusion);
+                    float surfaceReduction = 1.0 / (roughness2 + 1.0);
+                    half grazingTerm = saturate(smoothness + reflectivity);
+                    indirectSpecular = indirectSpecular * surfaceReduction * lerp(_WaterSpecularColor, grazingTerm, fresnelTerm);
+                }
+
+                specularLighting += indirectSpecular;
+                
+                
+                // 额外灯计算
+                #ifdef _ADDITIONAL_LIGHTS 
+                    for (int i = 0; i < pixelLightCount; ++i)
+                    {
+                        Light light = GetAdditionalLight(i, i.positionWS);
+                        NdotL = saturate(dot(normalWS, light.direction));
+                        half diffuse_nl = saturate(dot(half3(0,1,0), light.direction));
+                        
+                        half3 addLightColorAndAttenuation = light.color * light.distanceAttenuation * light.shadowAttenuation;
+
+                        underWaterDiffuse += _Color.rgb * addLightColorAndAttenuation * diffuse_nl;
+                        #if defined(_FOAM)
+                            foamDiffuse += foamMap.rgb * addLightColorAndAttenuation * NdotL;
+                        #endif
+
+                        
+                        H = SafeNormalize(float3(light.direction) + float3(V));
+                        NoH = saturate(dot(normalWS, H));
+                        LoH = saturate(dot(light.direction, H));
+                        d = NoH * NoH * (roughness2 - 1.h) + 1.0001f;
+                        LoH2 = LoH * LoH;
+                        specularTerm = roughness2 / ((d * d) * max(0.1h, LoH2) * normalizationTerm );
+                        #if defined (SHADER_API_MOBILE)
+                            specularTerm = specularTerm - HALF_MIN;
+                            specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobiles
+                        #endif
+                        specularLighting += specularTerm * _WaterSpecularColor * addLightColorAndAttenuation;
+                    }
+                #endif
+
+                // 计算折射颜色
+                #if defined _REFRACT_ON
+                    // 岸边：refractColor 
+                    // 深水：underWaterDiffuse
+                    refractColor = lerp(refractColor, underWaterDiffuse,underWaterDensity);
+                #else
+                    refractColor = underWaterDiffuse * underWaterDensity;
+                #endif
+
+                half3 color = refractColor;
+                #if defined _FOAM_ON
+                    color = lerp(color, foamDiffuse, foamMap.a);
+                #endif
+                
+                
+                color += specularLighting;
+
+                half alpha = 1;
+                #if defined _REFRACT_ON
+                    color = lerp(refractMap, color, saturate(_EdgeBlend * viewDepth));
+                #else
+                    #if defined _FOAM_ON
+                        float visibility = saturate(underWaterDensity + foamMap.a) * oneMinusReflectivity + reflectivity;
+                    #else
+                        float visibility = underWaterDensity * oneMinusReflectivity + reflectivity;
+                    #endif
+                    color.rgb = saturate(_EdgeBlend * viewDepth);
+                    alpha = saturate(_EdgeBlend * viewDepth) * visibility;
+                    
+                #endif
+
+                return half4(color,alpha);
+
+
             }
             ENDHLSL
         }
