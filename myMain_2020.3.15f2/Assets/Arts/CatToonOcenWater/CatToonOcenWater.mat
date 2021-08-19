@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: CatToonOcenWater
   m_Shader: {fileID: 4800000, guid: ceaf40ce06528954b99a05fd28f1ee05, type: 3}
-  m_ShaderKeywords: _WAVE_ON
+  m_ShaderKeywords: _PLANARREFLECTION_ON _WAVE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -100,39 +100,39 @@ Material:
     - _AlphaCutoff: 0.5
     - _Blend: 0
     - _BumpScale: 1
-    - _CausticIntensity: 1.32
-    - _CausticRange: 1.4
-    - _CausticTilling: 0.41
+    - _CausticIntensity: 1.51
+    - _CausticRange: 1.14
+    - _CausticTilling: 0.84
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
     - _Density_UnderWater: 1
-    - _DepthRange: 0.597
+    - _DepthRange: 0.195
     - _DetailAlbedoMapScale: 1
     - _DetailMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EdgeBlend: 1
-    - _EnvNoiseIntensity: 0
+    - _EnvNoiseIntensity: 0.751
     - _EnvironmentReflections: 1
     - _Foam: 0
     - _FoamBlend: -0.41
     - _FoamFrequency: 20
-    - _FoamIntensity: 0.5
-    - _FoamNoiseDissolve: 0.715
-    - _FoamNoiseTlling: 1
-    - _FoamRange: 0.384
+    - _FoamIntensity: 0.143
+    - _FoamNoiseDissolve: 0.641
+    - _FoamNoiseTlling: 0.485
+    - _FoamRange: 0.251
     - _FoamScale: 1
-    - _FoamShape: 0.707
+    - _FoamShape: 0.722
     - _FoamSlopIntensity: 1
     - _FoamSmoothness: 1
-    - _FoamSpeed: 10
+    - _FoamSpeed: 6.12
     - _FoamTiling: 1
     - _FoamWidth: 1
     - _FresnelIntensity: 1
-    - _FresnelPow: 1
-    - _FresnelRange: 8.6
+    - _FresnelPow: 2
+    - _FresnelRange: 18.74
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -140,6 +140,8 @@ Material:
     - _NormalTilling: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.005
+    - _PlanarReflection: 1
+    - _PlanarReflectionIntensity: 0.125
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _ReflectionBumpScale: 0.5
@@ -147,9 +149,9 @@ Material:
     - _ReflectionPow: 2
     - _Refract: 0
     - _Refraction: 1
-    - _ShoreEdgeIntensity: 1
-    - _ShoreEdgeWidth: 0.713
-    - _ShoreRange: 0.042
+    - _ShoreEdgeIntensity: 0.207
+    - _ShoreEdgeWidth: 0.861
+    - _ShoreRange: 0.114
     - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -163,26 +165,26 @@ Material:
     - _WaterDix_X: -0.59
     - _WaterDix_Z: 0
     - _WaterSmoothness: 1
-    - _WaterSpeed: 0.154
+    - _WaterSpeed: 0.265
     - _Wave: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DeepColor: {r: 0.06915272, g: 0.16000259, b: 0.6981132, a: 1}
+    - _DeepColor: {r: 0.13243146, g: 0.15088698, b: 0.3018868, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FoamColor: {r: 0.5709772, g: 0.8584906, b: 0.84412926, a: 1}
-    - _FresnelColor: {r: 0.67058825, g: 0.43227014, b: 0.3372549, a: 1}
-    - _ShallowColor: {r: 0.12156863, g: 0.7490196, b: 0.73333335, a: 1}
+    - _FoamColor: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
+    - _FresnelColor: {r: 0.033953354, g: 0.062516265, b: 0.066037714, a: 1}
+    - _ShallowColor: {r: 0.16887684, g: 0.6509434, b: 0.60629433, a: 1}
     - _ShoreColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _WaterColor: {r: 1, g: 1, b: 1, a: 1}
     - _WaterSpecularColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - _WaveASpeedXYSteepnesswavelength: {r: 0.28, g: -4.96, b: 2, a: 10}
-    - _WaveB: {r: 0.46, g: -2.08, b: 2, a: 26.08}
-    - _WaveC: {r: -4.29, g: 3.05, b: 2, a: 10}
-    - _WaveColor: {r: 0.12156861, g: 0.61726195, b: 0.62352943, a: 0}
+    - _WaveASpeedXYSteepnesswavelength: {r: 0.28, g: -4.96, b: 0, a: 10}
+    - _WaveB: {r: 0.46, g: 3.7, b: 0, a: 10}
+    - _WaveC: {r: -0.9, g: 3.05, b: 1, a: 10}
+    - _WaveColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &7571676922385153793
 MonoBehaviour:

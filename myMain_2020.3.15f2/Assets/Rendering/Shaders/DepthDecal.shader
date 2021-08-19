@@ -1,5 +1,5 @@
 
-Shader "URP/Unlit"
+Shader "Jefford/Plane Decal"
 {
     Properties
     {
