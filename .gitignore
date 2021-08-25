@@ -16,23 +16,11 @@ bin-release/
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
-2020.3.15f2/Assembly-CSharp-Editor.csproj
 
-myMain_2020.3.15f2
-2020.3.15f2/Library
-2020.3.15f2/Temp
-2020.3.15f2/Logs
-2020.3.15f2/UserSettings
-2020.3.15f2/obj
-2020.3.15f2/myMain_2020.3.15f2.sln
-2020.3.15f2/.vscode/settings.json
-2020.3.15f2/Assembly-CSharp.csproj
-2020.3.15f2/Assets/3rd/AmplifyShaderEditor
-2020.3.15f2/Assets/_TerrainAutoUpgrade
-2020.3.15f2/Assets/AmplifyShaderEditor
-2020.3.15f2/Assets/AmplifyShaderEditor.meta
-2020.3.15f2/Assets/_TerrainAutoUpgrade.meta
-2020.3.15f2/Assets/3rd/AmplifyShaderEditor.meta
-2020.3.15f2/AmplifyShaderEditor.Samples.BuiltIn.csproj
-2020.3.15f2/AmplifyShaderEditor.csproj
+
+2020.3.15f2_main/Library
+2020.3.15f2_main/Logs
+2020.3.15f2_main/Temp
+2020.3.15f2_main/UserSettings
+2020.3.15f2_main/Assets
 
