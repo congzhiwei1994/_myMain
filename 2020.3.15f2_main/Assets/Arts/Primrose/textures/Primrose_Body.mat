@@ -104,8 +104,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _3S_Offset: 0.74
-    - _AO_Intensity: 0.357
+    - _3S_Offset: 0.2
+    - _AO_Intensity: 0.016
     - _AlphaClip: 0
     - _AlphaCutoff: 0.5
     - _Blend: 0
@@ -121,8 +121,8 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _Metallic: 0.133
-    - _NoiseIntensity: 0.409
+    - _Metallic: 0
+    - _NoiseIntensity: 0.785
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
@@ -144,7 +144,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DarkColor: {r: 0.9339623, g: 0.3216002, b: 0.3216002, a: 0}
+    - _DarkColor: {r: 0.7264151, g: 0.46020135, b: 0.4488697, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _RampColor: {r: 0.7830189, g: 0.21052866, b: 0.21052866, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
