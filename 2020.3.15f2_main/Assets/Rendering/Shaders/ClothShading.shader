@@ -5,6 +5,8 @@ Shader "Jefford/Cloth Shading"
     {
         _BaseColor("Base Color",color) = (1,1,1,1)
         _BaseMap("BaseMap", 2D) = "white" {}
+        _EnvCubeMap("环境反射CubeMap",Cube) = "white" {}
+        _EnvIntensity("_EnvIntensity",Range(0,1)) = 0.5
         [NoScaleOffset]_MaskMap("Thickness厚度:(G) AO:(B) Alpha:(A)", 2D) = "white" {}
         _OcclusionStrength("AO强度",Range(0,1)) = 1
         _SpecColor("高光颜色",color) = (1,1,1,1)
@@ -16,6 +18,14 @@ Shader "Jefford/Cloth Shading"
         [Toggle] _COTTONWOOL("是否为绒面材质",int) = 0
         _SheenColor("Sheen Color", Color) = (0.5, 0.5, 0.5,1)
         _GGXAnisotropy("GGX各向异性偏移系数", Range(-1.0, 1.0)) = 0.0
+
+        [Space(10)]
+        [Toggle] _Scattering("是否开启散射",int) = 0
+        _TranslucencyColor("透射颜色",color) = (1,1,1,1)
+        _TranslucencyPower("投射范围", Range(0.0, 32.0)) = 7.0
+        _ThicknessStrength("厚度", Range(0.0, 1.0)) = 1.0
+        _ShadowStrength("阴影强度", Range(0.0, 1.0)) = 0.7
+        _Distortion("透射扭曲强度", Range(0.0, 0.1)) = 0.01
         
     }
 
@@ -26,7 +36,7 @@ Shader "Jefford/Cloth Shading"
             "Queue"="Geometry"
             "RenderType" = "Opaque" 
             "RenderPipeline" = "UniversalPipeline"
-            "IgnoreProjector" = "True"
+            "IgnoreProjector" = "false"
         }
 
         Pass
@@ -44,7 +54,14 @@ Shader "Jefford/Cloth Shading"
             #pragma fragment frag
             
             #pragma shader_feature _COTTONWOOL_ON
+            #pragma shader_feature _SCATTERING_ON
 
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile _ _SHADOWS_SOFT
+            
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -60,10 +77,19 @@ Shader "Jefford/Cloth Shading"
             half _BumpScale;
             half4 _SheenColor;
             half _GGXAnisotropy;
+
+            half4 _TranslucencyColor;
+            half _TranslucencyPower;
+            half _ThicknessStrength;
+            half _ShadowStrength;
+            half _Distortion;
+
+            half4 _EnvCubeMap_HDR;
+            half _EnvIntensity;
             CBUFFER_END
 
             TEXTURE2D (_MaskMap);           SAMPLER(sampler_MaskMap);
-
+            TEXTURECUBE(_EnvCubeMap);       SAMPLER(sampler_EnvCubeMap);
 
 
 
@@ -112,12 +138,13 @@ Shader "Jefford/Cloth Shading"
             };
 
 
-            half3 DirectBDRF_LuxCloth(BRDFData brdfData, Light light, AdditionalData addData, half3 normalWS, half3 viewDirectionWS, half NdotL)
+            half3 DirectBDRF_LuxCloth(BRDFData brdfData, Light light, AdditionalData addData, half3 normalWS, half3 viewDirectionWS)
             {
 
                 half3 lightDirectionWS = light.direction;
                 half lightAttenuation = light.distanceAttenuation * light.shadowAttenuation;
                 half3 lightColor = light.color;
+                half NdotL = saturate(dot(normalWS, lightDirectionWS));
                 half3 radiance = lightColor * (lightAttenuation * NdotL);
 
 
@@ -141,7 +168,7 @@ Shader "Jefford/Cloth Shading"
                     //  Therefore we use the noPI charlie version. As PI is a constant factor the artists can tweak the look by adjusting the sheen color.
                     float3 F = addData.sheenColor; // * PI;
                     half3 specularLighting = F * Vis * D;
-      
+                    
                     //  Unity: Note: diffuseLighting originally is multiply by color in PostEvaluateBSDF
                     //  So we do it here :)
                     //  Using saturate to get rid of artifacts around the borders.
@@ -166,7 +193,22 @@ Shader "Jefford/Cloth Shading"
 
             }
 
-
+            half3 TranslucencyColor(Light light, half thickness, half3 normalWS, half3 viewDirWS)
+            {
+                // 主灯阴影衰减
+                half mainLightShadowAtten = lerp(1, light.shadowAttenuation, _ShadowStrength);
+                half atten = light.distanceAttenuation * mainLightShadowAtten;
+                half NoL = saturate(dot(normalWS, light.direction));
+                // 进行法线方向扭曲
+                half transLightDir = light.direction + normalWS * _Distortion;
+                half LoV = saturate(dot(transLightDir, -viewDirWS));
+                // 压暗暗部，逐渐缩小透射区域
+                LoV = exp2(LoV * _TranslucencyPower - _TranslucencyPower);
+                LoV = LoV * (1 - NoL);
+                half3 translucencyColor = LoV * light.color * atten * thickness * 4 * _TranslucencyColor.rgb;
+                return translucencyColor;
+            }
+            
 
             struct Attributes
             {
@@ -216,14 +258,8 @@ Shader "Jefford/Cloth Shading"
                 o.bitangentWS = cross(o.normalWS, o.tangentWS) * sign;
                 o.viewDirWS = _WorldSpaceCameraPos - o.positionWS;
                 o.vertexSH = SampleSHVertex(o.normalWS);
-                
-
                 return o;
             }
-
-
-
-
 
             // facing: 双面渲染的情况下，正面为白色，背面为黑色
             half4 frag(Varyings i, half facing : VFACE) : SV_Target
@@ -258,8 +294,8 @@ Shader "Jefford/Cloth Shading"
                 #endif
                 
                 
-                half thickness = maskMap.r;
-                half ao = lerp(1 ,maskMap.g, _OcclusionStrength);
+
+                half occlusion = lerp(1 ,maskMap.b, _OcclusionStrength);
                 half3 albedo = baseMap.rgb * _BaseColor.rgb;
                 half smoothness = baseMap.a * _Smoothness;
                 #if defined(_COTTONWOOL_ON)
@@ -311,13 +347,88 @@ Shader "Jefford/Cloth Shading"
 
                 Light mainLight = GetMainLight(shadowCoord);
                 half NoL = max(0.001, dot(normalWS, mainLight.direction));
-                half3 indirect = GlobalIllumination(brdfData, sh, ao, addData.anisoReflectionNormal, viewDirWS);
-                half3 direct = DirectBDRF_LuxCloth( brdfData, mainLight, addData, normalWS, viewDirWS, NoL);
 
+                half3 indirect;
+                {
+                    half3 indirectDiffuse = sh * occlusion * brdfData.diffuse;
+                    
+                    half3 indirectSpecular;
+                    {
+                        half3 reflectVector = reflect(-viewDirWS, addData.anisoReflectionNormal);
+                        half NdotV = saturate(dot(addData.anisoReflectionNormal, viewDirWS));
+                        half fresnelTerm = Pow4(1.0 - NdotV);
+                        
+                        half mip = PerceptualRoughnessToMipmapLevel(brdfData.perceptualRoughness);
+                        half4 envCubeMap = SAMPLE_TEXTURECUBE_LOD(_EnvCubeMap, sampler_EnvCubeMap, reflectVector, mip);
+                        
+                        half3 ibl = DecodeHDREnvironment(envCubeMap, _EnvCubeMap_HDR) * occlusion;
+                        
+                        float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
+                        surfaceReduction = surfaceReduction * lerp(brdfData.specular, brdfData.grazingTerm, fresnelTerm);
+                        indirectSpecular = ibl * surfaceReduction;
+                    }
+
+                    indirect = indirectDiffuse + indirectSpecular * _EnvIntensity * NoL;
+                }
+
+                
+                half3 direct = DirectBDRF_LuxCloth( brdfData, mainLight, addData, normalWS, viewDirWS);
                 half3 c = indirect + direct;
+
+                #if defined(_SCATTERING_ON)
+                    // 厚度
+                    half thickness = maskMap.g * _ThicknessStrength;
+                    half3 translucencyColor = TranslucencyColor(mainLight, thickness, normalWS, viewDirWS);
+                    c += translucencyColor;
+                #endif
+                
+
+                #ifdef _ADDITIONAL_LIGHTS
+                    int pixelLightCount = GetAdditionalLightsCount();
+                    for (int j = 0; j < pixelLightCount; ++j)
+                    {
+                        Light light = GetAdditionalLight(j, i.positionWS);
+                        c += DirectBDRF_LuxCloth( brdfData, light, addData, normalWS, viewDirWS);
+
+                        #if defined(_SCATTERING)
+                            c + =TranslucencyColor(light, thickness, normalWS, viewDirWS);
+                        #endif
+                    }
+                #endif
                 
                 return half4(c, 1);
             }
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "ShadowCaster"
+            Tags{"LightMode" = "ShadowCaster"}
+
+            ZWrite On
+            ZTest LEqual
+
+            HLSLPROGRAM
+            // Required to compile gles 2.0 with standard srp library
+            #pragma prefer_hlslcc gles
+            #pragma exclude_renderers d3d11_9x
+            #pragma target 2.0
+
+            // -------------------------------------
+            // Material Keywords
+            #pragma shader_feature _ALPHATEST_ON
+
+            //--------------------------------------
+            // GPU Instancing
+            #pragma multi_compile_instancing
+            #pragma shader_feature _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+
+            #pragma vertex ShadowPassVertex
+            #pragma fragment ShadowPassFragment
+
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
     }
