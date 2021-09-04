@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Cloth
   m_Shader: {fileID: 4800000, guid: 8bfdba72a175aea43aa018c6b207baaa, type: 3}
-  m_ShaderKeywords: _SCATTERING_ON
+  m_ShaderKeywords: _COTTONWOOL_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -26,6 +26,10 @@ Material:
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 4313f2394d2e8194e8997a88a2b3ceba, type: 3}
         m_Scale: {x: 1, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _ClothCubeMap:
+        m_Texture: {fileID: 8900000, guid: 1a31313294ee3bc4c825080691e30eb6, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
         m_Texture: {fileID: 0}
@@ -86,20 +90,21 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _Blend: 0
-    - _BumpScale: 0
-    - _COTTONWOOL: 0
+    - _BumpScale: 1
+    - _COTTONWOOL: 1
     - _COTTONWOOL_ON: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _ClothCubeIntensity: 1
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _Distortion: 0
     - _DstBlend: 0
-    - _EnvIntensity: 0
+    - _EnvIntensity: 1
     - _EnvironmentReflections: 1
-    - _GGXAnisotropy: -0.55
+    - _GGXAnisotropy: 0.669
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -108,7 +113,7 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _Scattering: 1
+    - _Scattering: 0
     - _ShadowStrength: 0.742
     - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
@@ -125,7 +130,7 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SheenColor: {r: 0.16091135, g: 0.29906783, b: 0.3018868, a: 1}
-    - _SpecColor: {r: 0.2804379, g: 0.3656113, b: 0.4339623, a: 1}
+    - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _TranslucencyColor: {r: 0.26415092, g: 0.13581344, b: 0.1845492, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &927483098463231002
