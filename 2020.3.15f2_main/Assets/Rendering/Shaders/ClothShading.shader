@@ -5,8 +5,8 @@ Shader "Jefford/Cloth Shading"
     {
         _BaseColor("Base Color",color) = (1,1,1,1)
         _BaseMap("BaseMap", 2D) = "white" {}
-        _EnvCubeMap("环境反射CubeMap",Cube) = "white" {}
-        _EnvIntensity("_EnvIntensity",Range(0,1)) = 0.5
+        _ClothCubeMap("衣服环境反射CubeMap",Cube) = "white" {}
+        _ClothCubeIntensity("衣服环境反射强度",Range(0,1)) = 0.5
         [NoScaleOffset]_MaskMap("Thickness厚度:(G) AO:(B) Alpha:(A)", 2D) = "white" {}
         _OcclusionStrength("AO强度",Range(0,1)) = 1
         _SpecColor("高光颜色",color) = (1,1,1,1)
@@ -84,12 +84,12 @@ Shader "Jefford/Cloth Shading"
             half _ShadowStrength;
             half _Distortion;
 
-            half4 _EnvCubeMap_HDR;
-            half _EnvIntensity;
+            half4 _ClothCubeMap_HDR;
+            half _ClothCubeIntensity;
             CBUFFER_END
 
             TEXTURE2D (_MaskMap);           SAMPLER(sampler_MaskMap);
-            TEXTURECUBE(_EnvCubeMap);       SAMPLER(sampler_EnvCubeMap);
+            TEXTURECUBE(_ClothCubeMap);       SAMPLER(sampler_ClothCubeMap);
 
 
 
@@ -359,16 +359,16 @@ Shader "Jefford/Cloth Shading"
                         half fresnelTerm = Pow4(1.0 - NdotV);
                         
                         half mip = PerceptualRoughnessToMipmapLevel(brdfData.perceptualRoughness);
-                        half4 envCubeMap = SAMPLE_TEXTURECUBE_LOD(_EnvCubeMap, sampler_EnvCubeMap, reflectVector, mip);
+                        half4 envCubeMap = SAMPLE_TEXTURECUBE_LOD(_ClothCubeMap, sampler_ClothCubeMap, reflectVector, mip);
                         
-                        half3 ibl = DecodeHDREnvironment(envCubeMap, _EnvCubeMap_HDR) * occlusion;
+                        half3 ibl = DecodeHDREnvironment(envCubeMap, _ClothCubeMap_HDR) * occlusion;
                         
                         float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
                         surfaceReduction = surfaceReduction * lerp(brdfData.specular, brdfData.grazingTerm, fresnelTerm);
                         indirectSpecular = ibl * surfaceReduction;
                     }
 
-                    indirect = indirectDiffuse + indirectSpecular * _EnvIntensity * NoL;
+                    indirect = indirectDiffuse + indirectSpecular * _ClothCubeIntensity * NoL;
                 }
 
                 

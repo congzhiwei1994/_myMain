@@ -38,7 +38,7 @@ Shader "Jefford/Hair/Kajiya Kay Hair_B"
             Name "ForwardLit"
             Tags{"LightMode" = "SRPDefaultUnlit"}
 
-            ZWrite off
+            // ZWrite off
 
 
             HLSLPROGRAM
@@ -154,7 +154,7 @@ Shader "Jefford/Hair/Kajiya Kay Hair_B"
             Tags{"LightMode" = "UniversalForward"}
 
             Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite on
+            ZWrite off
             Cull off
 
             HLSLPROGRAM

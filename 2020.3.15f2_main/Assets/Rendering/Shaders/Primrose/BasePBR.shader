@@ -6,17 +6,38 @@ Shader "Jefford/Primrose/BasePBR"
 {
     Properties
     {
-        [MainColor] _BaseColor("Color", Color) = (1,1,1,1)
-        [MainTexture] _BaseMap("Albedo", 2D) = "white" {}
-        _BumpScale("Scale", Float) = 1.0
-        [NoScaleOffset]_NormalMap("NormalMap", 2D) = "bump" {}
-        [NoScaleOffset]_MetallicMap("_MetallicMap", 2D) = "white" {}
-        _Metallic("_Metallic",Range(0,1)) = 1
-        [NoScaleOffset]_RoughnessMap("_RoughnessMap", 2D) = "white" {}
-        _Roughness("_Roughness",Range(0,1)) = 1
-        [NoScaleOffset]_AOMap("_AOMap", 2D) = "white" {}
-        _AO("_AO",Range(0,1)) = 1
+        [MainColor] _BaseColor("基本颜色", Color) = (1,1,1,1)
+        [MainTexture] _BaseMap("固有色纹理", 2D) = "white" {}
+        _BumpScale("法线缩放", Float) = 1.0
+        [NoScaleOffset]_NormalMap("法线纹理", 2D) = "bump" {}
+        [NoScaleOffset]_MetallicMap("金属度纹理", 2D) = "white" {}
+        _Metallic("金属度强度",Range(0,1)) = 1
+        [NoScaleOffset]_RoughnessMap("粗糙度纹理", 2D) = "white" {}
+        _Smoothness("光滑度强度",Range(0,1)) = 1
+        [NoScaleOffset]_AOMap("AO纹理", 2D) = "white" {}
+        _OcclusionStrength("AO强度",Range(0,1)) = 1
+        [NoScaleOffset]_ClothMaskMap("衣服遮罩(0是衣服)", 2D) = "white" {}
         [NoScaleOffset] _CubeMap("_CubeMap",Cube) = "white"{}
+
+        [Space(10)]
+        [Header(Cloth)]
+        [Toggle] _COTTONWOOL("是否为绒面材质",int) = 0
+        _SheenColor("绒面颜色", Color) = (0.5, 0.5, 0.5,1)
+        _ClothSpecColor("各向异性高光颜色", Color) = (0.5, 0.5, 0.5,1)
+        _GGXAnisotropy("GGX各向异性偏移系数", Range(-1.0, 1.0)) = 0.0
+
+        [NoScaleOffset]_ClothCubeMap("衣服环境反射CubeMap",Cube) = "white" {}
+        _ClothCubeIntensity("衣服环境反射强度",Range(0,1)) = 0.5
+
+        [Space(10)]
+        [Toggle] _Scattering("是否开启散射",int) = 0
+        _TranslucencyColor("透射颜色",color) = (1,1,1,1)
+        _TranslucencyPower("投射范围", Range(0.0, 32.0)) = 7.0
+        _ThicknessStrength("厚度", Range(0.0, 1.0)) = 1.0
+        _ShadowStrength("阴影强度", Range(0.0, 1.0)) = 0.7
+        _Distortion("透射扭曲强度", Range(0.0, 0.1)) = 0.01
+        
+
         
     }
 
@@ -44,6 +65,9 @@ Shader "Jefford/Primrose/BasePBR"
             #pragma exclude_renderers d3d11_9x
             #pragma target 2.0
 
+            #pragma shader_feature _COTTONWOOL_ON
+            #pragma shader_feature _SCATTERING_ON
+
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
@@ -51,11 +75,10 @@ Shader "Jefford/Primrose/BasePBR"
             #pragma multi_compile _ _SHADOWS_SOFT
             #pragma multi_compile _ _MIXED_LIGHTING_SUBTRACTIVE
 
-            // -------------------------------------
-            // Unity defined keywords
             #pragma multi_compile _ DIRLIGHTMAP_COMBINED
             #pragma multi_compile _ LIGHTMAP_ON
             #pragma multi_compile_fog
+
 
             //--------------------------------------
             // GPU Instancing
@@ -70,22 +93,9 @@ Shader "Jefford/Primrose/BasePBR"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             
-
-            CBUFFER_START(UnityPerMaterial)
-            float4 _BaseMap_ST;
-            half4 _BaseColor;
-            half _Roughness;
-            half _Metallic;
-            half _BumpScale;
-            half _AO;
-
-            CBUFFER_END
-
-            TEXTURE2D(_MetallicMap);          SAMPLER(sampler_MetallicMap);
-            TEXTURE2D(_RoughnessMap);         SAMPLER(sampler_RoughnessMap);
-            TEXTURE2D(_AOMap);                SAMPLER(sampler_AOMap);
-            TEXTURE2D(_NormalMap);            SAMPLER(sampler_NormalMap);
-            TEXTURECUBE(_CubeMap);            SAMPLER(sampler_CubeMap);
+            #include "../ShaderLibrary/InputData.hlsl"
+            #include "../ShaderLibrary/BasePBRLighting.hlsl"
+            #include "../ShaderLibrary/GGX_ClothLighting.hlsl"
 
 
             struct Attributes
@@ -174,25 +184,6 @@ Shader "Jefford/Primrose/BasePBR"
                 return o;
             }
 
-            
-            half3 LightingPhysicallyBased1(BRDFData brdfData, Light light, half3 normalWS, half3 viewDirectionWS)
-            {
-                half3 lightColor = light.color;
-                half3 lightDirectionWS = light.direction;
-                half lightAttenuation = light.distanceAttenuation * light.shadowAttenuation;
-
-                half NdotL = saturate(dot(normalWS, lightDirectionWS)) * 0.8 + 0.2;
-                half3 radiance = lightColor * (lightAttenuation * NdotL);
-
-                half3 brdf = brdfData.diffuse;
-                
-                brdf += brdfData.specular * DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS);
-
-                return brdf * radiance;
-            }
-
-
-
             half4 LitPassFragment(Varyings i) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(i);
@@ -204,12 +195,12 @@ Shader "Jefford/Primrose/BasePBR"
                 half metallicMap = SAMPLE_TEXTURE2D(_MetallicMap, sampler_MetallicMap,i.uv);
                 half roughnessMap = SAMPLE_TEXTURE2D(_RoughnessMap, sampler_RoughnessMap,i.uv);
                 half aoMap = SAMPLE_TEXTURE2D(_AOMap,sampler_AOMap,i.uv);
+                
+                half clothMask = SAMPLE_TEXTURE2D(_ClothMaskMap,sampler_ClothMaskMap, i.uv).r;
 
                 half4 normalMap = SAMPLE_TEXTURE2D(_NormalMap, sampler_NormalMap, i.uv);
-                half3 normapTS= UnpackNormalScale(normalMap,_BumpScale);
-
+                half3 normalTS= UnpackNormalScale(normalMap,_BumpScale);
                 half3x3 tbn = half3x3(i.tangentWS.xyz, i.bitangentWS.xyz, i.normalWS.xyz);
-                half3 normalWS = NormalizeNormalPerPixel( mul(normapTS, tbn));
 
                 #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
                     float4 shadowCoord = i.shadowCoord;
@@ -219,55 +210,65 @@ Shader "Jefford/Primrose/BasePBR"
                     float4 shadowCoord = float4(0, 0, 0, 0);
                 #endif
                 
-                // ---------------------------------------
-                half3 albedo = baseMap.rgb;
-                half alpha = baseMap.a;
-                half metallic = saturate(metallicMap * _Metallic);
-                half smoothness = saturate((1 - roughnessMap) * _Roughness);
-                half occlusion = saturate((1 - aoMap) * _AO);
-                half3 emission = 0;
-                half3 specular = 0;
 
-                half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, normalWS);
-                float3 viewDirWS = SafeNormalize(float3(i.normalWS.w, i.tangentWS.w, i.bitangentWS.w));
+                TextureData texData;
+                ZERO_INITIALIZE(TextureData, texData);
+                texData.albedo = baseMap.rgb * _BaseColor.rgb;
+                texData.smoothness = saturate((1 - roughnessMap) * _Smoothness);
+                texData.occlusion = lerp(1, aoMap, _OcclusionStrength );
+                texData.metallic = saturate(metallicMap * _Metallic);
+                texData.specular = _ClothSpecColor;
+                texData.alpha = baseMap.a;
 
+                VectorData vectorData;
+                ZERO_INITIALIZE(VectorData, vectorData);
+                vectorData.viewDirWS = SafeNormalize(float3(i.normalWS.w, i.tangentWS.w, i.bitangentWS.w));
+                vectorData.normalWS = NormalizeNormalPerPixel(mul(normalTS, tbn));
+                vectorData.tbn = tbn;
+
+
+                AdditionalData addData;
                 BRDFData brdfData;
-                InitializeBRDFData(albedo.rgb, metallic, specular, smoothness, alpha, brdfData);
-                
+                half3 normalWS = 1;
+
+                GGX_ClothData(addData, brdfData, normalWS, vectorData, texData);
                 Light mainLight = GetMainLight(shadowCoord);
-                MixRealtimeAndBakedGI(mainLight, normalWS, bakedGI, half4(0, 0, 0, 0));
 
+                normalWS = lerp(normalWS, vectorData.normalWS, clothMask);
+                half3 bakedGI = SampleSHPixel(i.vertexSH, normalWS);
 
-                half3 indirect = 1;
-                {
-                    half3 indirectDiffuse = bakedGI * occlusion * brdfData.diffuse;
+                half3 clothIndirect = ClothIndirect( mainLight, bakedGI, normalWS, texData, brdfData, addData, vectorData);
+                half3 clothDirect = DirectBDRF_LuxCloth( brdfData, mainLight, addData, normalWS, vectorData.viewDirWS);
+                half3 clothLight = clothIndirect + clothDirect;
 
-                    half3 reflectVector = reflect(-viewDirWS, normalWS);
-                    half fresnelTerm = Pow4(1.0 - saturate(dot(normalWS, viewDirWS)));
-
-                    half mip = PerceptualRoughnessToMipmapLevel(brdfData.perceptualRoughness);
-                    half4 cubeMap = SAMPLE_TEXTURECUBE_LOD(_CubeMap, sampler_CubeMap, reflectVector, mip);
-                    half3 ibl = DecodeHDREnvironment(cubeMap, unity_SpecCube0_HDR) * occlusion;
-
-                    float surfaceReduction = 1.0 / (brdfData.roughness2 + 1.0);
-                    half3 indirectSpecular = surfaceReduction * ibl * lerp(brdfData.specular, brdfData.grazingTerm, fresnelTerm);
-                    indirect = indirectDiffuse + indirectSpecular;
-                }
-
+                texData.specular = 0;
+                InitializeBRDFData(texData.albedo.rgb, texData.metallic, texData.specular, texData.smoothness, texData.alpha, brdfData);
+                half3 indirect = BasePBRIndirect( mainLight, bakedGI, normalWS, texData, brdfData, vectorData);
+                half3 direct = LightingPhysicallyBased1(brdfData, mainLight, normalWS, vectorData.viewDirWS);
+                half3 baseLight = indirect + direct;
                 
-                half3 color = indirect;
-                color += LightingPhysicallyBased1(brdfData, mainLight, normalWS, viewDirWS);
+                #if defined(_SCATTERING_ON)
+                    // 厚度
+                    half thickness =  _ThicknessStrength;
+                    half3 translucencyColor = TranslucencyColor(mainLight, thickness, normalWS, vectorData.viewDirWS);
+                    clothLight += translucencyColor;
+                #endif
 
+
+
+                half3 color = lerp(clothLight, baseLight, clothMask);
                 #ifdef _ADDITIONAL_LIGHTS
                     uint pixelLightCount = GetAdditionalLightsCount();
                     for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
                     {
                         Light light = GetAdditionalLight(lightIndex, i.positionWS);
-                        color += LightingPhysicallyBased1(brdfData, light, normalWS, viewDirWS);
+                        color += LightingPhysicallyBased1(brdfData, light, normalWS, vectorData.viewDirWS);
                     }
                 #endif
+
+                color = ACESFilm(color);
                 
-                clip(alpha - 0.5);
+                clip(texData.alpha - 0.5);
                 return half4(color,1);
             }
 

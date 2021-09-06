@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Cloth 1
-  m_Shader: {fileID: 4800000, guid: 8bfdba72a175aea43aa018c6b207baaa, type: 3}
+  m_Shader: {fileID: 4800000, guid: 240d49af2373c7349828e3fcb5c3937c, type: 3}
   m_ShaderKeywords: _SCATTERING_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -21,11 +21,15 @@ Material:
     m_TexEnvs:
     - _BaseMap:
         m_Texture: {fileID: 2800000, guid: 5b6c07e74cdbccc40b9b88828210d07f, type: 3}
-        m_Scale: {x: 5, y: 5}
+        m_Scale: {x: 3, y: 3}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 2800000, guid: 4313f2394d2e8194e8997a88a2b3ceba, type: 3}
         m_Scale: {x: 1, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _ClothCubeMap:
+        m_Texture: {fileID: 8900000, guid: a3d5070faf611c74c9389b8088004081, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
         m_Texture: {fileID: 0}
@@ -86,31 +90,32 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _Blend: 0
-    - _BumpScale: 1
+    - _BumpScale: 1.5
     - _COTTONWOOL: 0
     - _COTTONWOOL_ON: 0
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _ClothCubeIntensity: 1
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _Distortion: 0
     - _DstBlend: 0
-    - _EnvIntensity: 0
+    - _EnvIntensity: 1
     - _EnvironmentReflections: 1
-    - _GGXAnisotropy: 0.72
+    - _GGXAnisotropy: 0.019
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _OcclusionStrength: 0
+    - _OcclusionStrength: 0.729
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Scattering: 1
     - _ShadowStrength: 0.742
-    - _Smoothness: 0.682
+    - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -122,11 +127,12 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ClothSpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SheenColor: {r: 0.23429155, g: 0.36315185, b: 0.3679245, a: 1}
-    - _SpecColor: {r: 0.20260769, g: 0.24992585, b: 0.2735849, a: 1}
-    - _TranslucencyColor: {r: 0.3773585, g: 0.34589076, b: 0.31861874, a: 1}
+    - _SheenColor: {r: 0.16091135, g: 0.29906783, b: 0.3018868, a: 1}
+    - _SpecColor: {r: 0.2804379, g: 0.3656113, b: 0.4339623, a: 1}
+    - _TranslucencyColor: {r: 0.26415092, g: 0.13581344, b: 0.1845492, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &927483098463231002
 MonoBehaviour:
