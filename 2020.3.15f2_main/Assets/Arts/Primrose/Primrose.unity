@@ -828,5 +828,9 @@ PrefabInstance:
       propertyPath: targetFocus
       value: 
       objectReference: {fileID: 296265861}
+    - target: {fileID: 5654095612003625715, guid: 4411f71a8cb0e234190013b1c4f25523, type: 3}
+      propertyPath: ShapeModule.m_Scale.x
+      value: 3.43
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4411f71a8cb0e234190013b1c4f25523, type: 3}
