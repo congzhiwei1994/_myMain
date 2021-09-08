@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17795989, g: 0.22281423, b: 0.30493495, a: 1}
+  m_IndirectSpecularColor: {r: 0.18361862, g: 0.2278525, b: 0.29796547, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -325,13 +325,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 536505759}
-  m_LocalRotation: {x: -0.510718, y: -0.29585648, z: 0.051685352, w: -0.8055834}
-  m_LocalPosition: {x: -0.0231, y: 1.695524, z: -0.3018328}
+  m_LocalRotation: {x: 0.21586463, y: 0.008040697, z: -0.0037541895, w: 0.976383}
+  m_LocalPosition: {x: -1.9172828, y: 2.0557904, z: -0.30296063}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 58.587, y: 54.418, z: 24.837}
+  m_LocalEulerAnglesHint: {x: 24.935, y: 0.89, z: -0.244}
 --- !u!1001 &1461813265
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -395,6 +395,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 162b4bff72aed074cb1ceda0990bcbc9, type: 2}
+    - target: {fileID: 6258919511995808289, guid: 027fd7a7dd1bcd74abf6936f77d3c5a7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6309883768754153860, guid: 027fd7a7dd1bcd74abf6936f77d3c5a7, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -517,6 +521,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7727721180361070506, guid: f07b80e3c4578234ca18928fa7afe45f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -7635903313773486173, guid: f07b80e3c4578234ca18928fa7afe45f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -529,6 +537,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 1f858794a94a71d408e8199ee818c5df, type: 2}
+    - target: {fileID: -4316764429896226631, guid: f07b80e3c4578234ca18928fa7afe45f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: f07b80e3c4578234ca18928fa7afe45f, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -589,6 +601,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: KYK_Skin
       objectReference: {fileID: 0}
+    - target: {fileID: -496122521936721411, guid: f07b80e3c4578234ca18928fa7afe45f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4734327467634164173, guid: f07b80e3c4578234ca18928fa7afe45f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5993438057770013986, guid: f07b80e3c4578234ca18928fa7afe45f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -645,5 +665,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -98,11 +98,14 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: -0.16
+    - _Offset: -0.02
     - _Parallax: 0.02
-    - _Scale: 0.001
+    - _Scale: 0.025
     - _SmoothnessTextureChannel: 0
+    - _SpecScale: 1
     - _SpecularHighlights: 1
+    - _SpecularPow: 13.4
+    - _SpecularRange: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
@@ -110,4 +113,5 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []

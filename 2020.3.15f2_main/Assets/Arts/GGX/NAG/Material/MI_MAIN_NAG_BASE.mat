@@ -47,6 +47,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 0bcf881dd1ec80c45ab75e516b7c66e9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ILM_Map:
+        m_Texture: {fileID: 2800000, guid: 0bcf881dd1ec80c45ab75e516b7c66e9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 5dd3ce7c2d6b4f7499555ea6b788a8bf, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -61,6 +65,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SSS_Map:
+        m_Texture: {fileID: 2800000, guid: cae494e0d0d4f20469c47d7e68b6a8c4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SssTex:
@@ -83,13 +91,19 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _Offset: 0.18
     - _Parallax: 0.02
+    - _Scale: 0.001
     - _SmoothnessTextureChannel: 0
+    - _SpecScale: 3.24
     - _SpecularHighlights: 1
+    - _SpecularPow: 13.5
+    - _SpecularRange: 51.2
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecularColor: {r: 0.990566, g: 0.990566, b: 0.990566, a: 0}
   m_BuildTextureStacks: []
