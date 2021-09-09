@@ -1,5 +1,5 @@
 
-Shader "URP/GBVS/Body(二次元碧蓝幻想)"
+Shader "Jefford/GBVS/Body(二次元碧蓝幻想)"
 {
     Properties
     {
@@ -185,11 +185,15 @@ Shader "URP/GBVS/Body(二次元碧蓝幻想)"
                         specular = specular * _SpecScale;
                         specular = saturate(specular) * specIntensity;
                     }
+                    return specular;
                     
                     specColor = (_SpecularColor.rgb + baseColor) * 0.5;
                     specColor = specular * specColor;
                     specColor *= innerLine;
+                    
                 }
+                
+                
                 
                 // 风格化补光
                 half3 rimColor;
