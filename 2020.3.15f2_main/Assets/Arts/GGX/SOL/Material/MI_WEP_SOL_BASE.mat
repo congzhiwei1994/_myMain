@@ -23,6 +23,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DecalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -49,6 +53,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _ILM_Map:
         m_Texture: {fileID: 2800000, guid: d2d32a65ae38fc44db87c3721f68f19a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _InnerMap:
+        m_Texture: {fileID: 2800000, guid: 329f39e6ea674554c95ce7d4df1bf822, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -79,6 +87,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _texcoord2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AOThreshold: 0.7
     - _AlphaCutoff: 0.5
@@ -101,16 +113,24 @@ Material:
     - _Offset: 0
     - _Parallax: 0.02
     - _R: 0
-    - _Scale: 1
+    - _RimDir_X: -1
+    - _RimDir_Y: -1
+    - _RimDir_Z: -1
+    - _RimIntensity: 0
+    - _RimThorld: 0.779
+    - _RimThorldScale: 0.177
+    - _Scale: 0.001
     - _SmoothnessTextureChannel: 0
-    - _SpecScale: 0
+    - _SpecScale: 4.78
     - _SpecularHighlights: 1
-    - _SpecularPow: 0
+    - _SpecularPow: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 0}
+    - _RimDir: {r: 0, g: 0, b: 0, a: 0}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
