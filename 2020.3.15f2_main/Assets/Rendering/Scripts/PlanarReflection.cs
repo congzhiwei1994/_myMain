@@ -124,6 +124,7 @@ public class PlanarReflection : MonoBehaviour
     //内置回调函数，物体渲染之前会先调用该函数
     void OnWillRenderObject()
     {
+        // 当前正在用于渲染的摄像机，仅用于低级别渲染控制
         Camera currentCam = Camera.current;
         if (currentCam == null)
         {

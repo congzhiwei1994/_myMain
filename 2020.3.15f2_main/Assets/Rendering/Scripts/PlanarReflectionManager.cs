@@ -23,6 +23,10 @@ public class PlanarReflectionManager : MonoBehaviour
     public static event Action<ScriptableRenderContext, Camera> BeginPlanarReflections;
     public bool hideReflectionCamera;
 
+
+
+
+
     void OnEnable()
     {
         RenderPipelineManager.beginCameraRendering += DoPlanarReflections;
@@ -59,13 +63,20 @@ public class PlanarReflectionManager : MonoBehaviour
         else Destroy(obj);
     }
 
+    /// <summary>
+    /// 更新反射相机
+    /// </summary>
+    /// <param name="realCamera"> 反射相机</param>
     private void UpdateReflectionCamera(Camera realCamera)
     {
-        if (_reflectionCamera == null) _reflectionCamera = InitializeReflectionCamera();
+        // 初始化反射相机
+        if (_reflectionCamera == null)
+            _reflectionCamera = InitializeReflectionCamera();
 
         Vector3 pos = Vector3.zero;
         Vector3 normal = Vector3.up;
 
+        // 反射平面
         if (reflectionTarget != null)
         {
             pos = reflectionTarget.transform.position + Vector3.up * reflectionPlaneOffset;
@@ -73,7 +84,9 @@ public class PlanarReflectionManager : MonoBehaviour
         }
 
         UpdateCamera(realCamera, _reflectionCamera);
-        _reflectionCamera.gameObject.hideFlags = (hideReflectionCamera) ? HideFlags.HideAndDontSave : HideFlags.DontSave;
+        // _reflectionCamera.gameObject.hideFlags = (hideReflectionCamera) ? HideFlags.HideAndDontSave : HideFlags.DontSave;
+        _reflectionCamera.gameObject.hideFlags = HideFlags.HideAndDontSave;
+
 #if UNITY_EDITOR
         EditorApplication.DirtyHierarchyWindowSorting();
 #endif
@@ -97,17 +110,27 @@ public class PlanarReflectionManager : MonoBehaviour
         _reflectionCamera.transform.position = newPosition;
     }
 
+    /// <summary>
+    /// 设置反射画面
+    /// </summary>
+    /// <param name="src"></param>
+    /// <param name="dest"></param>
     private void UpdateCamera(Camera src, Camera dest)
     {
-        if (dest == null) return;
+        if (dest == null)
+            return;
 
+        // 复制画面
         dest.CopyFrom(src);
         dest.useOcclusionCulling = false;
 
         if (dest.gameObject.TryGetComponent(out UnityEngine.Rendering.Universal.UniversalAdditionalCameraData camData))
         {
             camData.renderShadows = false;
-            if (reflectSkybox) dest.clearFlags = CameraClearFlags.Skybox;
+
+            // 是否开启反射天空球
+            if (reflectSkybox)
+                dest.clearFlags = CameraClearFlags.Skybox;
             else
             {
                 dest.clearFlags = CameraClearFlags.SolidColor;
@@ -116,12 +139,18 @@ public class PlanarReflectionManager : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// 生成并且设置反射相机
+    /// </summary>
+    /// <returns></returns>
     private Camera InitializeReflectionCamera()
     {
+        // 创建反射相机
         var go = new GameObject("", typeof(Camera));
         go.name = "Reflection Camera [" + go.GetInstanceID() + "]";
-        var camData = go.AddComponent(typeof(UnityEngine.Rendering.Universal.UniversalAdditionalCameraData)) as UnityEngine.Rendering.Universal.UniversalAdditionalCameraData;
 
+        var camData = go.AddComponent(typeof(UnityEngine.Rendering.Universal.UniversalAdditionalCameraData)) as UnityEngine.Rendering.Universal.UniversalAdditionalCameraData;
         camData.requiresColorOption = CameraOverrideOption.Off;
         camData.requiresDepthOption = CameraOverrideOption.Off;
         camData.SetRenderer(0);
@@ -129,7 +158,9 @@ public class PlanarReflectionManager : MonoBehaviour
         var t = transform;
         var reflectionCamera = go.GetComponent<Camera>();
         reflectionCamera.transform.SetPositionAndRotation(t.position, t.rotation);
-        reflectionCamera.depth = -10;
+        // reflectionCamera.depth = -10;
+        reflectionCamera.depthTextureMode = DepthTextureMode.None;
+        reflectionCamera.allowMSAA = false;
         reflectionCamera.enabled = false;
 
         return reflectionCamera;
@@ -157,6 +188,10 @@ public class PlanarReflectionManager : MonoBehaviour
         };
     }
 
+    /// <summary>
+    /// 创建RT
+    /// </summary>
+    /// <param name="camera"></param>
     private void CreateReflectionTexture(Camera camera)
     {
         var descriptor = GetDescriptor(camera, UniversalRenderPipeline.asset.renderScale);
@@ -187,8 +222,10 @@ public class PlanarReflectionManager : MonoBehaviour
               referencePosition += new Vector3(1e-4f, 1e-4f, 1e-4f);
           }*/
 
-        if (camera.cameraType == CameraType.Reflection || camera.cameraType == CameraType.Preview) return;
-        if (!reflectionTarget) return;
+        if (camera.cameraType == CameraType.Reflection || camera.cameraType == CameraType.Preview)
+            return;
+        if (!reflectionTarget)
+            return;
 
         UpdateReflectionCamera(camera);
         CreateReflectionTexture(camera);
@@ -198,7 +235,7 @@ public class PlanarReflectionManager : MonoBehaviour
         BeginPlanarReflections?.Invoke(context, _reflectionCamera);
         var pos = _reflectionCamera.WorldToViewportPoint(reflectionTarget.transform.position);
 
-        if (pos.x > 0 && pos.x < UnityEngine.Screen.width && pos.y >0 && pos.y < UnityEngine.Screen.height && !_reflectionCamera.orthographic) 
+        if (pos.x > 0 && pos.x < UnityEngine.Screen.width && pos.y > 0 && pos.y < UnityEngine.Screen.height && !_reflectionCamera.orthographic)
         {
             //屏幕大小
             UniversalRenderPipeline.RenderSingleCamera(context, _reflectionCamera);
@@ -206,6 +243,8 @@ public class PlanarReflectionManager : MonoBehaviour
         data.Restore();
         Shader.SetGlobalTexture(_planarReflectionTextureId, _reflectionTexture);
     }
+
+
 
     class PlanarReflectionSettingData
     {

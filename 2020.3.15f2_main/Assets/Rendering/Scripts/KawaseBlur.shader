@@ -1,4 +1,4 @@
-﻿Shader "Hidden/KawaseBlur(模糊)"
+﻿Shader "Hidden/KawaseBlur"
 {
 	Properties
 	{
