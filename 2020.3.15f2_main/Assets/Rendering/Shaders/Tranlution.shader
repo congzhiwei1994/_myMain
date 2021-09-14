@@ -2,7 +2,7 @@
 // @ https://www.zhihu.com/people/jefford-55
 
 
-Shader "Jefford/Tranlution"
+Shader "Jefford/Tranlution(玉石)"
 {
     Properties
     {
@@ -16,7 +16,15 @@ Shader "Jefford/Tranlution"
         _Smoothness("Smoothness", Range(0.0, 1.0)) = 0
         _OcclusionStrength("Occlusion", Range(0.0, 1.0)) = 1.0
 
-        _ThicknessMap("_ThicknessMap", 2D) = "white" {}
+        _CubeMap("_CubeMap", Cube) = "white" {}
+
+        [Space(10)]
+        [Header(Tranlution)]
+        _ThicknessMap("厚度纹理", 2D) = "white" {}
+        _ThicknessIntensity("厚度强度",Range(0,2)) = 1
+        _TranlutionDistort("透射扭曲",Range(0,1)) = 0.2
+        _TranlutionRange("透射范围",Range(0,50)) = 0.2
+        _TranlutionIntensity("透射强度",Range(0,5)) = 1
         
     }
 
@@ -81,9 +89,16 @@ Shader "Jefford/Tranlution"
             half _EmissionIntensity;
             half _OcclusionStrength;
 
+            half _TranlutionDistort;
+            half _TranlutionRange;
+            half _TranlutionIntensity;
+            half _ThicknessIntensity;
             CBUFFER_END
 
-            TEXTURE2D(_MixMap);       SAMPLER(sampler_MixMap);
+            TEXTURE2D(_MixMap);             SAMPLER(sampler_MixMap);
+            TEXTURE2D(_ThicknessMap);       SAMPLER(sampler_ThicknessMap);
+            TEXTURECUBE(_CubeMap);       SAMPLER(sampler_CubeMap);
+
 
 
             struct Attributes
@@ -119,23 +134,12 @@ Shader "Jefford/Tranlution"
 
             half3 GlossyEnvironmentReflection1(half3 reflectVector, half perceptualRoughness, half occlusion)
             {
-                #if !defined(_ENVIRONMENTREFLECTIONS_OFF)
-                    half mip = PerceptualRoughnessToMipmapLevel(perceptualRoughness);
-                    half4 encodedIrradiance = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0, samplerunity_SpecCube0, reflectVector, mip);
-
-                    #if !defined(UNITY_USE_NATIVE_HDR)
-                        half3 irradiance = DecodeHDREnvironment(encodedIrradiance, unity_SpecCube0_HDR);
-                    #else
-                        half3 irradiance = encodedIrradiance.rbg;
-                    #endif
-
-                    return irradiance * occlusion;
-                #endif // GLOSSY_REFLECTIONS
-
-                return _GlossyEnvironmentColor.rgb * occlusion;
+                half mip = PerceptualRoughnessToMipmapLevel(perceptualRoughness);
+                half4 encodedIrradiance = SAMPLE_TEXTURECUBE_LOD(_CubeMap, sampler_CubeMap, reflectVector, mip);
+                half3 irradiance = DecodeHDREnvironment(encodedIrradiance, unity_SpecCube0_HDR);
+                return irradiance * occlusion;
             }
             
-
             half3 GlobalIllumination1(BRDFData brdfData, half3 bakedGI, half occlusion, half3 normalWS, half3 viewDirectionWS)
             {
                 half3 reflectVector = reflect(-viewDirectionWS, normalWS);
@@ -151,8 +155,21 @@ Shader "Jefford/Tranlution"
                 return indirect;
             }
 
+            half3 Translution( Light light, half3 V, half3 N, half3 albedo)
+            {
+                half3 L = -light.direction;
+                half3 lightColor = light.color;
+                half atten = light.distanceAttenuation;
 
-            half4 UniversalFragmentPBR1(InputData inputData, half3 albedo, half metallic, half3 specular,
+                half3 H = SafeNormalize(L + N * _TranlutionDistort);
+                half VoH = saturate(dot(V,H));
+                VoH = max(0.001, pow(VoH, _TranlutionRange)) * _TranlutionIntensity;
+                half3 color = VoH * lightColor * albedo * atten;
+                return color;
+            }
+            
+
+            half4 UniversalFragmentPBR1(half thickness, InputData inputData, half3 albedo, half metallic, half3 specular,
             half smoothness, half occlusion, half3 emission, half alpha)
             {
                 BRDFData brdfData;
@@ -164,14 +181,15 @@ Shader "Jefford/Tranlution"
                 half3 color = GlobalIllumination1(brdfData, inputData.bakedGI, occlusion, inputData.normalWS, inputData.viewDirectionWS);
                 color += LightingPhysicallyBased(brdfData, mainLight, inputData.normalWS, inputData.viewDirectionWS);
 
-
-
+                half3 T = Translution(mainLight, inputData.viewDirectionWS, inputData.normalWS, albedo) * thickness;
+                color += T;
                 #ifdef _ADDITIONAL_LIGHTS
                     uint pixelLightCount = GetAdditionalLightsCount();
                     for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
                     {
                         Light light = GetAdditionalLight(lightIndex, inputData.positionWS);
                         color += LightingPhysicallyBased(brdfData, light, inputData.normalWS, inputData.viewDirectionWS);
+                        color += Translution(light, inputData.viewDirectionWS, inputData.normalWS, albedo) * thickness;
                     }
                 #endif
 
@@ -180,6 +198,7 @@ Shader "Jefford/Tranlution"
                 #endif
 
                 color += emission;
+                
                 return half4(color, alpha);
             }
 
@@ -251,7 +270,9 @@ Shader "Jefford/Tranlution"
                 half4 normalMap = SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap,i.uv);
                 half3 normapTS= UnpackNormalScale(normalMap,_BumpScale);
 
-
+                half4 thickness = SAMPLE_TEXTURE2D(_ThicknessMap, sampler_ThicknessMap,i.uv);
+                thickness = saturate(thickness.g * _ThicknessIntensity);
+                
                 // --------------------------------------- SurfaceData ---------------------------------------
 
                 SurfaceData surfaceData;
@@ -260,7 +281,7 @@ Shader "Jefford/Tranlution"
                 surfaceData.alpha = albedo.a;
                 surfaceData.metallic = saturate(mixMap.r * _Metallic);
                 surfaceData.specular = half3(0.0h, 0.0h, 0.0h);
-                surfaceData.smoothness = saturate(mixMap.g * _Smoothness);
+                surfaceData.smoothness = saturate((1 - mixMap.g) * _Smoothness);
                 surfaceData.normalTS = normapTS;
                 surfaceData.occlusion = saturate(mixMap.b * _OcclusionStrength);
                 surfaceData.emission = 0;
@@ -290,7 +311,7 @@ Shader "Jefford/Tranlution"
                 inputData.vertexLighting = i.fogFactorAndVertexLight.yzw;
                 inputData.bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, inputData.normalWS);
 
-                half4 color = UniversalFragmentPBR1(inputData, surfaceData.albedo, surfaceData.metallic, surfaceData.specular, surfaceData.smoothness, surfaceData.occlusion, surfaceData.emission, surfaceData.alpha);
+                half4 color = UniversalFragmentPBR1(thickness, inputData, surfaceData.albedo, surfaceData.metallic, surfaceData.specular, surfaceData.smoothness, surfaceData.occlusion, surfaceData.emission, surfaceData.alpha);
 
                 color.rgb = MixFog(color.rgb, inputData.fogCoord);
                 return color;
