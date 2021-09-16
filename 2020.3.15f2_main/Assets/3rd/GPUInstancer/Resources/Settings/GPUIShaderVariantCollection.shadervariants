@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GPUIShaderVariantCollection
+  m_Shaders:
+  - first: {fileID: 4800000, guid: 8c09ceafd07c22648a98a34fdfcbe766, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: -6465566751694194690, guid: 78f1b5ae9238ef140869bdba4aef19db, type: 3}
+    second:
+      variants: []
+  - first: {fileID: -6465566751694194690, guid: 13567c7704562ff4188beb583474bbb9, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+  - first: {fileID: 4800000, guid: 82de82b577147a642af099f486b450b2, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: _ALPHATEST_ON _LIGHTMAPPING_REALTIME _NORMALMAP _SPECGLOSSMAP _UNIFORMWIND_ON
+          _UVSEC_UV1
+        passType: 0
+      - keywords: _ALPHATEST_ON _EMISSION _LIGHTMAPPING_DYNAMIC_LIGHTMAPS _LIGHTMAPPING_REALTIME
+          _UNIFORMWIND_ON _UVSEC_UV1
+        passType: 0
+      - keywords: _ALPHATEST_ON _LIGHTMAPPING_DYNAMIC_LIGHTMAPS _LIGHTMAPPING_REALTIME
+          _NORMALMAP _SPECGLOSSMAP _UNIFORMWIND_ON _UVSEC_UV1
+        passType: 0
+  - first: {fileID: 4800000, guid: c92467b9b45529a45ae0f668ad3dbeb7, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 0
+      - keywords: _NORMALMAP
+        passType: 0
