@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Regular_BodySkin
-  m_Shader: {fileID: 4800000, guid: 3a24dc6b62ebe924698373799d83c772, type: 3}
+  m_Shader: {fileID: 4800000, guid: d4274d913c6d5354d9f7cc0c169820dc, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -39,6 +39,10 @@ Material:
         m_Texture: {fileID: 8900000, guid: 9b14208227d207b47abf60e5852645e9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LutMap:
+        m_Texture: {fileID: 2800000, guid: e72acf861be61bd4f89b52bfe22d58ad, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -63,8 +67,13 @@ Material:
         m_Texture: {fileID: 2800000, guid: 2ef9cb8127cb76c47a9f1f9b7f4bf588, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _texcoord:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AlphaClip: 0
+    - _AlphaCutoff: 0.5
     - _Blend: 0
     - _BumpScale: 1
     - _Color_A_Intensity: 1
@@ -100,6 +109,7 @@ Material:
     - _SrcBlend: 1
     - _Surface: 0
     - _WorkflowMode: 1
+    - _Y: 0.962
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
@@ -111,6 +121,7 @@ Material:
     - _OutLineColor: {r: 0.7264151, g: 0.620194, b: 0.620194, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor: {r: 0.745283, g: 0.3370849, b: 0.2988163, a: 1}
+  m_BuildTextureStacks: []
 --- !u!114 &8354132659707365896
 MonoBehaviour:
   m_ObjectHideFlags: 11

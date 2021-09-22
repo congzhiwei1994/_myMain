@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: KajiyaKayHair
-  m_Shader: {fileID: 4800000, guid: 4df3a9e9f66e2574580ad69c347a31bc, type: 3}
+  m_Shader: {fileID: 4800000, guid: d4274d913c6d5354d9f7cc0c169820dc, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -51,6 +51,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 22cf8ceea48a19340bbd143ce7822e0a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LutMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -67,7 +71,15 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Shift:
+        m_Texture: {fileID: 2800000, guid: 22cf8ceea48a19340bbd143ce7822e0a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _texcoord:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -85,6 +97,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AlphaClip: 0
+    - _AlphaCutoff: 0.5
     - _AnistyScale: 2.97
     - _Atten: 1
     - _AttenPow: 2.55
@@ -103,6 +116,7 @@ Material:
     - _DistortB: 0.37
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _Float0: 1.32
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -133,6 +147,7 @@ Material:
     - _Shift: -0.09
     - _ShiftA: -0.02
     - _ShiftB: -0.39
+    - _ShiftFactor: 4.07
     - _Shininess: 0.12
     - _Shininess1: 1
     - _ShininessA: 0.17
@@ -143,6 +158,7 @@ Material:
     - _SrcBlend: 1
     - _Surface: 0
     - _WorkflowMode: 1
+    - _Y: 0.764706
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.8679245, g: 0.8676621, b: 0.80651474, a: 1}
