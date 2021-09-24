@@ -1,7 +1,7 @@
-#include <iostream>  // ÒýÈëiostream¿â Í·ÎÄ¼þ
-using namespace std; // ÒýÈëÃüÃû¿Õ¼ä
+#include <iostream>  // ï¿½ï¿½ï¿½ï¿½iostreamï¿½ï¿½ Í·ï¿½Ä¼ï¿½
+using namespace std; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½
 
-// º¯ÊýÐèÒªÏÈÉùÃ÷ÔÙµ÷ÓÃ
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ùµï¿½ï¿½ï¿½
 void Num();
 void Hello();
 void Mul();
@@ -13,14 +13,15 @@ void whileNumA();
 
 int main()
 {
-    /* º¯ÊýµÄµ÷ÓÃ
+    /* ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½
     Num();
     Hello();
     Mul();
     WhileNum();
 */
 
-    whileNumA();
+    Hello();
+
     return 0;
 }
 
@@ -44,7 +45,7 @@ void WhileNum()
         sum += v1;
         ++v1;
     }
-    cout << "ºÍÎª " << sum << endl;
+    cout << "ï¿½ï¿½Îª " << sum << endl;
     cin >> v1;
 }
 
@@ -88,7 +89,7 @@ void Mul()
 {
     int v1, v2;
     cin >> v1 >> v2;
-    cout << "»ýÎª£º  " << v1 * v2 << endl;
+    cout << "ï¿½ï¿½Îªï¿½ï¿½  " << v1 * v2 << endl;
     cin >> v1;
 }
 
@@ -102,10 +103,10 @@ void Hello()
 
 void Num()
 {
-    cout << "ÇëÊäÈëÁ½¸öÊý×Ö:" << endl;
+    cout << "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:" << endl;
     int v1 = 0, v2 = 0;
     cin >> v1 >> v2;
     cout << "the number of" << v1 << "and" << v2
          << "is " << v1 + v2 << endl;
-    cin >> v1; // ÊäÈëÒ»¸öÊý×Ö½øÐÐ¹Ø±Õcmd´°¿Ú
+    cin >> v1; // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½Ð¹Ø±ï¿½cmdï¿½ï¿½ï¿½ï¿½
 }
