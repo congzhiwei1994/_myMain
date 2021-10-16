@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Regular_BodySkin
-  m_Shader: {fileID: 4800000, guid: d4274d913c6d5354d9f7cc0c169820dc, type: 3}
+  m_Shader: {fileID: 4800000, guid: 3a24dc6b62ebe924698373799d83c772, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
