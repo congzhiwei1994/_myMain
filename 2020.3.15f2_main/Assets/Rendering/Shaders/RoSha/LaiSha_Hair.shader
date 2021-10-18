@@ -1,5 +1,5 @@
 ﻿
-Shader "URP/Character/LaiSha/Hair"
+Shader "Jefford/LaiSha/Hair"
 {
     Properties
     {

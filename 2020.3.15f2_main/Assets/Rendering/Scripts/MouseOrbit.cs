@@ -21,6 +21,7 @@ public class MouseOrbit : MonoBehaviour {
     public float yMaxLimit = 60;
 
     public float objRotateSpeed = 500.0f;
+	
 
     //
 	private float x = 0.0f;

@@ -1,5 +1,5 @@
 ﻿
-Shader "URP/Character/LaiSha/Standard_NoOutLine"
+Shader "Jefford/LaiSha/Standard_NoOutLine"
 {
     Properties
     {

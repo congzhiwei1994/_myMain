@@ -1,5 +1,5 @@
 ﻿
-Shader "URP/Character/LaiSha/Standard"
+Shader "Jefford/LaiSha/Standard"
 {
     Properties
     {

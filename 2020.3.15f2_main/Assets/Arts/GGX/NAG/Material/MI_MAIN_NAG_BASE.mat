@@ -51,6 +51,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 0bcf881dd1ec80c45ab75e516b7c66e9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _InnerMap:
+        m_Texture: {fileID: 2800000, guid: ed876425d4d419044bb3f6316c98ca39, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 5dd3ce7c2d6b4f7499555ea6b788a8bf, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -79,6 +83,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _texcoord2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AlphaCutoff: 0.5
     - _BumpScale: 1
@@ -91,13 +99,19 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Offset: 0.18
+    - _Offset: -0.177
     - _Parallax: 0.02
-    - _Scale: 0.001
+    - _RimDir_X: 0.225
+    - _RimDir_Y: 0
+    - _RimDir_Z: -0.105
+    - _RimIntensity: 0.551
+    - _RimThorld: 0.307
+    - _RimThorldScale: 0.371
+    - _Scale: 0.088
     - _SmoothnessTextureChannel: 0
-    - _SpecScale: 3.24
+    - _SpecScale: 2.94
     - _SpecularHighlights: 1
-    - _SpecularPow: 13.5
+    - _SpecularPow: 8.3
     - _SpecularRange: 51.2
     - _SrcBlend: 1
     - _UVSec: 0
@@ -105,5 +119,6 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecularColor: {r: 0.990566, g: 0.990566, b: 0.990566, a: 0}
+    - _RimColor: {r: 0.51662177, g: 0.9433962, b: 0, a: 0}
+    - _SpecularColor: {r: 0.87777436, g: 0.8867924, b: 0.3890174, a: 0}
   m_BuildTextureStacks: []

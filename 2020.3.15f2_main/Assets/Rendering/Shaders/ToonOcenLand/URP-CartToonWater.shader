@@ -1,5 +1,5 @@
 ﻿
-Shader "Czw/URP/CartToonWater"
+Shader "Jefford/Simple CartToonWater"
 {
     Properties
     {
