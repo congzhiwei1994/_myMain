@@ -7,11 +7,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Primary", "Primary\Primary.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "三元运算符", "三元运算符\三元运算符.csproj", "{6C07817A-DCC8-429A-94DE-29D4C43FF135}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "多条件判断", "多条件判断\多条件判断.csproj", "{EC8B0AB2-F03B-42BA-B164-AA7CD01785ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "多条件判断", "多条件判断\多条件判断.csproj", "{EC8B0AB2-F03B-42BA-B164-AA7CD01785ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Switch语句", "Switch语句\Switch语句.csproj", "{A2884634-41C4-4676-B7FB-1A23FDCC9EF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Switch语句", "Switch语句\Switch语句.csproj", "{A2884634-41C4-4676-B7FB-1A23FDCC9EF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "循环结构_While循环", "循环结构_While循环\循环结构_While循环.csproj", "{E7B27A61-7B5F-4DAF-8F3E-F99EF3131565}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "循环结构_While循环", "循环结构_While循环\循环结构_While循环.csproj", "{E7B27A61-7B5F-4DAF-8F3E-F99EF3131565}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "循环结构_do while循环", "循环结构_do while循环\循环结构_do while循环.csproj", "{E9927FDB-DFB1-49BB-8AA9-D5EF610E3DEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "循环结构_for循环", "循环结构_for循环\循环结构_for循环.csproj", "{ED9A7AC9-4288-4AA7-BE79-6D1DA47702E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "break跳出循环结构", "break跳出循环结构\break跳出循环结构.csproj", "{606AA19B-6D79-4328-83EC-8BFCD4BDEB90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "循环的终端continue", "循环的终端continue\循环的终端continue.csproj", "{33DD529B-FD5C-4053-A134-3FE730E2E905}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +47,22 @@ Global
 		{E7B27A61-7B5F-4DAF-8F3E-F99EF3131565}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7B27A61-7B5F-4DAF-8F3E-F99EF3131565}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7B27A61-7B5F-4DAF-8F3E-F99EF3131565}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9927FDB-DFB1-49BB-8AA9-D5EF610E3DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9927FDB-DFB1-49BB-8AA9-D5EF610E3DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9927FDB-DFB1-49BB-8AA9-D5EF610E3DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9927FDB-DFB1-49BB-8AA9-D5EF610E3DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED9A7AC9-4288-4AA7-BE79-6D1DA47702E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED9A7AC9-4288-4AA7-BE79-6D1DA47702E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED9A7AC9-4288-4AA7-BE79-6D1DA47702E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED9A7AC9-4288-4AA7-BE79-6D1DA47702E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{606AA19B-6D79-4328-83EC-8BFCD4BDEB90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{606AA19B-6D79-4328-83EC-8BFCD4BDEB90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{606AA19B-6D79-4328-83EC-8BFCD4BDEB90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{606AA19B-6D79-4328-83EC-8BFCD4BDEB90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33DD529B-FD5C-4053-A134-3FE730E2E905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33DD529B-FD5C-4053-A134-3FE730E2E905}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33DD529B-FD5C-4053-A134-3FE730E2E905}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33DD529B-FD5C-4053-A134-3FE730E2E905}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
