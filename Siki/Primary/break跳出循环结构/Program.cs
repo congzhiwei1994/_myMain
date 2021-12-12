@@ -13,11 +13,10 @@ namespace break跳出循环结构
                 int num = Convert.ToInt32(str);
                 if (num == 0)
                 {
-                    //  使用break跳出最近的一次循环结构
+                    //  结束循环
                     break;
                 }
                 Console.WriteLine(num);
-
             }
          
         }
