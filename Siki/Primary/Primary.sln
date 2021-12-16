@@ -43,9 +43,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "练习10", "练习10\练习
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "练习11", "练习11\练习11.csproj", "{43A59E65-6758-450F-AA9A-A3ED039B696D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "练习12", "练习12\练习12.csproj", "{AC17CE64-FDD2-4054-9E5F-E43D5E08FBEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "练习12", "练习12\练习12.csproj", "{AC17CE64-FDD2-4054-9E5F-E43D5E08FBEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "类型转换之隐形转换和显示转换", "类型转换之隐形转换和显示转换\类型转换之隐形转换和显示转换.csproj", "{01CF912D-257A-4DDA-B8A3-6E5C3111940F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "类型转换之隐形转换和显示转换", "类型转换之隐形转换和显示转换\类型转换之隐形转换和显示转换.csproj", "{01CF912D-257A-4DDA-B8A3-6E5C3111940F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "枚举类型", "枚举类型\枚举类型.csproj", "{3C39421C-23AE-47B9-8635-8737CEAD7858}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "结构体类型", "结构体类型\结构体类型.csproj", "{9AD7ED2A-2E0B-4771-BE2D-AE03365CF215}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "结构体类型练习", "结构体类型练习\结构体类型练习.csproj", "{BEC60CFD-A1D2-4663-85E0-CE0C59C9C4B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,6 +147,18 @@ Global
 		{01CF912D-257A-4DDA-B8A3-6E5C3111940F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01CF912D-257A-4DDA-B8A3-6E5C3111940F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01CF912D-257A-4DDA-B8A3-6E5C3111940F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C39421C-23AE-47B9-8635-8737CEAD7858}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C39421C-23AE-47B9-8635-8737CEAD7858}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C39421C-23AE-47B9-8635-8737CEAD7858}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C39421C-23AE-47B9-8635-8737CEAD7858}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AD7ED2A-2E0B-4771-BE2D-AE03365CF215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AD7ED2A-2E0B-4771-BE2D-AE03365CF215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AD7ED2A-2E0B-4771-BE2D-AE03365CF215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AD7ED2A-2E0B-4771-BE2D-AE03365CF215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEC60CFD-A1D2-4663-85E0-CE0C59C9C4B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEC60CFD-A1D2-4663-85E0-CE0C59C9C4B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEC60CFD-A1D2-4663-85E0-CE0C59C9C4B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEC60CFD-A1D2-4663-85E0-CE0C59C9C4B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
